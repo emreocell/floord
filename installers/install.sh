@@ -1,4 +1,3 @@
-
 #!/usr/bin/env sh
 set -eu
 
@@ -37,7 +36,7 @@ Description=Floord file organizer
 After=default.target
 
 [Service]
-ExecStart=$BINARY_PATH --daemon --organizer --cleanup --allow-deletion
+ExecStart=$BINARY_PATH --daemon --organizer --cleanup
 Restart=on-failure
 RestartSec=10
 

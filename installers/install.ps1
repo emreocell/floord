@@ -7,7 +7,7 @@ $InstallDir = Join-Path $env:LOCALAPPDATA "Floord"
 $AppExe = Join-Path $InstallDir "floord.exe"
 $TaskName = "Floord"
 
-$AppArgs = "--daemon --organizer --cleanup --allow-deletion"
+$AppArgs = "--daemon --organizer --cleanup"
 
 # CREATE INSTALLATION DIRECTORY
 Write-Host "Preparing installation directory..." -ForegroundColor Cyan
