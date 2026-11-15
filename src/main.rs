@@ -1,6 +1,7 @@
 use clap::Parser;
 use dirs::{audio_dir, document_dir, download_dir, picture_dir, video_dir};
 use floord::{cleanup_service, saving_service};
+use serde::Deserialize;
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::thread;
@@ -12,15 +13,15 @@ const C_LOOP_INTERVAL: Duration = Duration::from_mins(5);
 
 /// Floor daemon - File organizer and cleaner.
 /// Modify its args in '~/.config/systemd/user/floor-daemon.service' and reload.
-#[derive(Parser)]
+#[derive(Parser, Deserialize)]
 #[command(version, about, long_about = None, group(
         clap::ArgGroup::new("services")
-            .args(["organizer", "cleanup"])
+            .args(["organizer", "cleanup", "config"])
             .required(true)
             .multiple(true)
     ))]
 #[allow(clippy::struct_excessive_bools)]
-pub struct Args {
+struct Args {
     /// Enables the inbox organizer function
     #[arg(long, help_heading = "Inbox organizer", default_value_t = false)]
     organizer: bool,
@@ -78,6 +79,18 @@ pub struct Args {
     /// Needed for the execution as a service
     #[arg(long, help_heading = "Daemon", default_value_t = false)]
     daemon: bool,
+
+    /// Path to configuration file
+    #[arg(long, help_heading = "Configuration", conflicts_with_all ([
+        "organizer",
+        "inbox",
+        "delay",
+        "cleanup",
+        "span",
+        "grace",
+        "allow_deletion"
+    ]))]
+    config: Option<PathBuf>,
 }
 
 fn run_organizer(cli_args: &Args) {
@@ -142,7 +155,16 @@ fn run_cleanup(cli_args: &Args) {
 }
 
 fn main() {
-    let cli_args = Arc::new(Args::parse());
+    let arguments = Args::parse();
+
+    let cli_args: Arc<Args> = match arguments.config {
+        Some(file_path) => {
+            let content = std::fs::read_to_string(file_path).unwrap();
+            let toml_args: Args = toml::from_str(&content).unwrap();
+            Arc::new(toml_args)
+        }
+        None => Arc::new(arguments),
+    };
 
     let organizer_args = Arc::clone(&cli_args);
     let cleanup_args = Arc::clone(&cli_args);
