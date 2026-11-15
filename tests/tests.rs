@@ -1,5 +1,5 @@
 use dirs::{audio_dir, document_dir, picture_dir, video_dir};
-use floord::{cleanup_service, saving_service, SECURE, SOON_DELETED, UNKNOWN};
+use floord::{SECURE, SOON_DELETED, UNKNOWN, cleanup_service, saving_service};
 use std::fs::{File, create_dir, create_dir_all, read_dir, remove_file};
 use std::thread::sleep;
 use std::time::Duration;
@@ -227,7 +227,6 @@ fn dont_delete_by_both_times() {
     let probe = path.join(SOON_DELETED).join(TEST_FILE);
     create_dir_all(&probe).unwrap();
 
-
     cleanup_service(
         &vec![path],
         &Duration::new(5, 0),
@@ -245,7 +244,6 @@ fn delete_by_both_times_zero() {
     let probe = path.join(SOON_DELETED).join(TEST_FILE);
     create_dir_all(&probe).unwrap();
 
-
     cleanup_service(&vec![path], &Duration::ZERO, &Duration::ZERO, true);
 
     assert!(!probe.exists());
@@ -259,20 +257,19 @@ fn delete_by_grace_time_zero() {
     let probe = path.join(SOON_DELETED).join(TEST_FILE);
     create_dir_all(&probe).unwrap();
 
-
     cleanup_service(
         &vec![path],
-        &Duration::from_millis(1),
+        &Duration::from_millis(50),
         &Duration::ZERO,
         true,
     );
 
     assert!(probe.exists());
 
-    sleep(Duration::from_millis(2));
+    sleep(Duration::from_millis(1000));
     cleanup_service(
         &vec![path],
-        &Duration::from_millis(1),
+        &Duration::from_millis(50),
         &Duration::ZERO,
         true,
     );
@@ -288,21 +285,20 @@ fn delete_by_span_time_zero() {
     let probe = path.join(SOON_DELETED).join(TEST_FILE);
     create_dir_all(&probe).unwrap();
 
-
     cleanup_service(
         &vec![path],
         &Duration::ZERO,
-        &Duration::from_millis(1),
+        &Duration::from_millis(50),
         true,
     );
 
     assert!(probe.exists());
 
-    sleep(Duration::from_millis(2));
+    sleep(Duration::from_millis(1000));
     cleanup_service(
         &vec![path],
         &Duration::ZERO,
-        &Duration::from_millis(1),
+        &Duration::from_millis(50),
         true,
     );
 
@@ -319,17 +315,17 @@ fn delete_by_summatory_times() {
 
     cleanup_service(
         &vec![path],
-        &Duration::from_millis(1),
-        &Duration::from_millis(1),
+        &Duration::from_millis(50),
+        &Duration::from_millis(50),
         true,
     );
     assert!(probe.exists()); // May exist due to not wait
 
-    sleep(Duration::from_millis(3));
+    sleep(Duration::from_millis(1000));
     cleanup_service(
         &vec![path],
-        &Duration::from_millis(1),
-        &Duration::from_millis(1),
+        &Duration::from_millis(50),
+        &Duration::from_millis(50),
         true,
     );
 
