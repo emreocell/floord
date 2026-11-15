@@ -8,6 +8,7 @@ mod savings;
 mod service_utils;
 
 pub const SOON_DELETED: &str = "SoonDeleted";
+pub const SECURE: &str = "Secure";
 pub const UNKNOWN: &str = "Unknown";
 
 pub fn saving_service(path: &Path, duration: &Duration) {

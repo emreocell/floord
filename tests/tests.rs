@@ -1,5 +1,5 @@
 use dirs::{audio_dir, document_dir, picture_dir, video_dir};
-use floord::{SOON_DELETED, UNKNOWN, cleanup_service, saving_service};
+use floord::{cleanup_service, saving_service, SECURE, SOON_DELETED, UNKNOWN};
 use std::fs::{File, create_dir, create_dir_all, read_dir, remove_file};
 use std::thread::sleep;
 use std::time::Duration;
@@ -341,4 +341,22 @@ fn delete_by_summatory_times() {
 
     assert!(!probe.exists()); // May NOT exist due to the wait
     assert!(probe.parent().unwrap().exists());
+}
+
+#[test]
+fn dont_delete_secure_nor_soon_deleted_folders() {
+    let path = tempdir_in(".").unwrap();
+    let path = path.path();
+    let secure = path.join(SECURE);
+    create_dir_all(&secure).unwrap();
+    let soon_deleted = path.join(SOON_DELETED);
+    create_dir_all(&soon_deleted).unwrap();
+
+    assert!(secure.exists());
+    assert!(soon_deleted.exists());
+
+    cleanup_service(&vec![path], &Duration::ZERO, &Duration::ZERO, true);
+
+    assert!(secure.exists());
+    assert!(soon_deleted.exists());
 }
