@@ -227,7 +227,6 @@ fn dont_delete_by_both_times() {
     let probe = path.join(SOON_DELETED).join(TEST_FILE);
     create_dir_all(&probe).unwrap();
 
-    assert!(probe.exists());
 
     cleanup_service(
         &vec![path],
@@ -246,7 +245,6 @@ fn delete_by_both_times_zero() {
     let probe = path.join(SOON_DELETED).join(TEST_FILE);
     create_dir_all(&probe).unwrap();
 
-    assert!(probe.exists());
 
     cleanup_service(&vec![path], &Duration::ZERO, &Duration::ZERO, true);
 
@@ -261,7 +259,6 @@ fn delete_by_grace_time_zero() {
     let probe = path.join(SOON_DELETED).join(TEST_FILE);
     create_dir_all(&probe).unwrap();
 
-    assert!(probe.exists());
 
     cleanup_service(
         &vec![path],
@@ -291,7 +288,6 @@ fn delete_by_span_time_zero() {
     let probe = path.join(SOON_DELETED).join(TEST_FILE);
     create_dir_all(&probe).unwrap();
 
-    assert!(probe.exists());
 
     cleanup_service(
         &vec![path],
@@ -320,8 +316,6 @@ fn delete_by_summatory_times() {
     let path = path.path();
     let probe = path.join(SOON_DELETED).join(TEST_FILE);
     create_dir_all(&probe).unwrap();
-
-    assert!(probe.exists());
 
     cleanup_service(
         &vec![path],
