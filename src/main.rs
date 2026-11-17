@@ -57,7 +57,7 @@ struct Args {
     )]
     span: u64,
 
-    /// Time in days until a file gets permanently DELETED from the `SoonDeleted` folder (currently not working)
+    /// Time in days until a file gets permanently DELETED from the `SoonDeleted` folder
     #[arg(
         long,
         help_heading = "Cleanup",
@@ -163,7 +163,7 @@ fn main() {
             let toml_args: Args = toml::from_str(&content).unwrap();
             Arc::new(toml_args)
         }
-        None => Arc::new(arguments)
+        None => Arc::new(arguments),
     };
 
     let organizer_args = Arc::clone(&cli_args);

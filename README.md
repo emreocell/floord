@@ -14,6 +14,14 @@ It uses the operating system's standard directories whenever available:
 
 **Unknown files**: If a file has an unsupported or unrecognized extension, Floord automatically creates an Unknown folder inside the designated organization directory (if it doesn't already exist) and moves the file there.
 
+## File Cleaning
+
+**Floord** can help keep your default folders clean by identifying files that haven't been accessed or modified for a specified period of time.
+
+You can configure which directories Floord should scan, as well as specify paths to exclude from the cleaning process.
+
+Depending on your configuration, Floord can group outdated files for easier management or automatically delete them.
+
 ## Installation
 
 ### Linux
@@ -32,3 +40,7 @@ To see the available commands and options, run:
 ```bash
 floord --help
 ```
+
+> [!NOTE]
+> A graphical interface for Floord is currently under development!
+> Check out floord-gui and feel free to contribute if you'd like to help with the project.

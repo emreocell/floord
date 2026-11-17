@@ -1,5 +1,5 @@
-use crate::{SECURE, SOON_DELETED};
 use crate::cleanups::{cleanup_phase, deletion_phase};
+use crate::{SECURE, SOON_DELETED};
 use std::fs::DirEntry;
 use std::ops::Add;
 use std::path::Path;
@@ -30,7 +30,11 @@ pub fn service(
 
 fn manage_entry(dir_entry: &DirEntry, duration_old: &Duration) {
     let path = dir_entry.path();
-    if path.file_name().is_some_and(|name| name == SOON_DELETED || name == SECURE) && path.is_dir() {
+    if path
+        .file_name()
+        .is_some_and(|name| name == SOON_DELETED || name == SECURE)
+        && path.is_dir()
+    {
         return;
     }
 
