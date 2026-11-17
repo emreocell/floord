@@ -8,7 +8,7 @@ use tempfile::{tempdir, tempdir_in};
 const TEST_FILE: &str = "test_c_a_r_a_c_u_l_o";
 
 //-------------------------------------------------------------------------------------------------
-//      CLEANUP TESTS
+//      SAVINGS TESTS
 //-------------------------------------------------------------------------------------------------
 
 #[test]
@@ -31,6 +31,35 @@ fn move_by_duration() {
     create_dir(&probe).unwrap();
     saving_service(tmp, &secs);
     assert!(!probe.exists())
+}
+
+#[test]
+fn move_to_unknown() {
+    let tmp = tempdir().unwrap();
+    let tmp = tmp.path();
+    let secs = Duration::ZERO;
+    let probe = tmp.join(TEST_FILE);
+    create_dir(&probe).unwrap();
+    saving_service(tmp, &secs);
+    assert!(!probe.exists());
+
+    assert!(tmp.join(UNKNOWN).exists());
+    assert!(tmp.join(UNKNOWN).join(TEST_FILE).exists())
+}
+
+#[test]
+fn move_to_unknown_by_duration() {
+    let tmp = tempdir().unwrap();
+    let tmp = tmp.path();
+    let secs = Duration::from_millis(500);
+    let probe = tmp.join(TEST_FILE);
+    create_dir(&probe).unwrap();
+    sleep(Duration::new(1, 0));
+    saving_service(tmp, &secs);
+    assert!(!probe.exists());
+
+    assert!(tmp.join(UNKNOWN).exists());
+    assert!(tmp.join(UNKNOWN).join(TEST_FILE).exists())
 }
 
 #[test]
@@ -218,7 +247,7 @@ fn correct_renaming_cleanup() {
     assert!(soon_deleted.join(third_file).exists())
 }
 // ------------------------------------------------------------------------------------------------
-// Deleting cleanup tests
+//      Deleting cleanup tests
 // ------------------------------------------------------------------------------------------------
 #[test]
 fn dont_delete_by_both_times() {
