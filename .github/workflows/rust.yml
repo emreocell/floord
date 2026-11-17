@@ -16,7 +16,7 @@ env:
 jobs:
 
   test-code:
-    name: Testing and Code health
+    name: Testing and Code Health
     runs-on: ubuntu-latest
 
     steps:
