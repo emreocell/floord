@@ -12,7 +12,7 @@ const O_LOOP_INTERVAL: Duration = Duration::from_millis(100);
 const C_LOOP_INTERVAL: Duration = Duration::from_mins(5);
 
 /// Floor daemon - File organizer and cleaner.
-/// Modify its args in '~/.config/systemd/user/floor-daemon.service' and reload.
+/// Modify its values in '~/.config/floord/config.toml' and reload.
 #[derive(Parser, Deserialize)]
 #[command(version, about, long_about = None, group(
         clap::ArgGroup::new("services")

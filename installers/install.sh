@@ -5,6 +5,8 @@ RELEASE_BIN="https://github.com/polete-bermejo/floord/releases/latest/download/f
 BINARY="floord"
 BINARY_PATH="/usr/local/bin/$BINARY"
 SERVICE_PATH="$HOME/.config/systemd/user"
+CONFIG_PATH="$HOME/.config/floord"
+CONFIG_FILE="$CONFIG_PATH/config.toml"
 SERVICE_FILE="$SERVICE_PATH/floor-daemon.service"
 
 TMP="$(mktemp)"
@@ -24,6 +26,51 @@ fi
 echo "Installing Floord..."
 sudo install -m 755 "$TMP" "$BINARY_PATH"
 
+if [ ! -f "$CONFIG_FILE" ]; then
+    mkdir -p "$CONFIG_PATH"
+    
+    # CREATE CONFIG FILE
+    cat > "$CONFIG_FILE" <<EOF
+# Floor Daemon configuration
+
+# General settings
+daemon = true
+
+# ==========================================
+# ORGANIZER
+# ==========================================
+
+# Enable Inbox organizer service and its parameters
+organizer = true
+
+# If not specified the program will try to find the default users downloads path
+# inbox = "/home/user/Downloads"
+delay = 300
+
+
+# ==========================================
+# CLEANUP
+# ==========================================
+
+# Enable Cleanup service and its parameters
+cleanup = true
+
+# Directories to clean
+# If not specified the program will try to find the default users folders (Documents, Pictures, Videos and Music)
+paths = []
+
+# Time in days before moving files to SoonDeleted
+span = 30
+
+# Additional days before permanent deletion
+grace = 7
+
+# Allow permanent deletion
+allow_deletion = false
+EOF
+
+fi
+
 # CREATE SYSTEMD DIRECTORY
 mkdir -p "$SERVICE_PATH"
 
@@ -36,7 +83,7 @@ Description=Floord file organizer
 After=default.target
 
 [Service]
-ExecStart=$BINARY_PATH --daemon --organizer --cleanup
+ExecStart=$BINARY_PATH --config $CONFIG_FILE
 Restart=on-failure
 RestartSec=10
 
