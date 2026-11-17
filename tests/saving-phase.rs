@@ -1,0 +1,166 @@
+use dirs::{audio_dir, document_dir, picture_dir, video_dir};
+use floord::{UNKNOWN, saving_service};
+use std::fs::{File, create_dir, create_dir_all, remove_file};
+use std::thread::sleep;
+use std::time::Duration;
+use tempfile::{tempdir, tempdir_in};
+
+const TEST_FILE: &str = "SAVING";
+
+//-------------------------------------------------------------------------------------------------
+//      SAVINGS TESTS
+//-------------------------------------------------------------------------------------------------
+
+#[test]
+fn dont_move_by_duration() {
+    let tmp = tempdir().unwrap();
+    let secs = Duration::new(300, 0);
+    let probe = &tmp.path().join(TEST_FILE);
+    create_dir(probe).unwrap();
+    saving_service(tmp.path(), &secs);
+    assert!(probe.exists())
+}
+
+#[test]
+fn move_by_duration() {
+    // And creates Unknown folder
+    let tmp = tempdir().unwrap();
+    let tmp = tmp.path();
+    let secs = Duration::ZERO;
+    let probe = tmp.join(TEST_FILE);
+    create_dir(&probe).unwrap();
+    saving_service(tmp, &secs);
+    assert!(!probe.exists())
+}
+
+#[test]
+fn move_to_unknown() {
+    let tmp = tempdir().unwrap();
+    let tmp = tmp.path();
+    let secs = Duration::ZERO;
+    let probe = tmp.join(TEST_FILE);
+    create_dir(&probe).unwrap();
+    saving_service(tmp, &secs);
+    assert!(!probe.exists());
+
+    assert!(tmp.join(UNKNOWN).exists());
+    assert!(tmp.join(UNKNOWN).join(TEST_FILE).exists())
+}
+
+#[test]
+fn move_to_unknown_by_duration() {
+    let tmp = tempdir().unwrap();
+    let tmp = tmp.path();
+    let secs = Duration::from_millis(500);
+    let probe = tmp.join(TEST_FILE);
+    create_dir(&probe).unwrap();
+    sleep(Duration::new(1, 0));
+    saving_service(tmp, &secs);
+    assert!(!probe.exists());
+
+    assert!(tmp.join(UNKNOWN).exists());
+    assert!(tmp.join(UNKNOWN).join(TEST_FILE).exists())
+}
+
+#[test]
+#[ignore]
+fn move_to_documents() {
+    let tmp = tempdir_in(".").unwrap();
+    let secs = Duration::ZERO;
+
+    let test_file = format!("{TEST_FILE}.pdf");
+    let probe = tmp.path().join(&test_file);
+
+    File::create_new(&probe).unwrap();
+
+    saving_service(tmp.path(), &secs);
+    let destination = document_dir().unwrap().join(&test_file);
+
+    assert!(!probe.exists());
+    assert!(destination.exists());
+    remove_file(destination).unwrap();
+}
+
+#[test]
+#[ignore]
+fn move_to_pictures() {
+    let tmp = tempdir_in(".").unwrap();
+    let secs = Duration::ZERO;
+
+    let test_file = format!("{TEST_FILE}.jpg");
+    let probe = tmp.path().join(&test_file);
+
+    File::create_new(&probe).unwrap();
+
+    saving_service(tmp.path(), &secs);
+    let destination = picture_dir().unwrap().join(&test_file);
+
+    assert!(!probe.exists());
+    assert!(destination.exists());
+    remove_file(destination).unwrap();
+}
+
+#[test]
+#[ignore]
+fn move_to_audio() {
+    let tmp = tempdir_in(".").unwrap();
+    let secs = Duration::ZERO;
+
+    let test_file = format!("{TEST_FILE}.mp3");
+    let probe = tmp.path().join(&test_file);
+
+    File::create_new(&probe).unwrap();
+
+    saving_service(tmp.path(), &secs);
+    let destination = audio_dir().unwrap().join(&test_file);
+
+    assert!(!probe.exists());
+    assert!(destination.exists());
+    remove_file(destination).unwrap();
+}
+
+#[test]
+#[ignore]
+fn move_to_video() {
+    let tmp = tempdir_in(".").unwrap();
+    let secs = Duration::ZERO;
+
+    let test_file = format!("{TEST_FILE}.mkv");
+    let probe = tmp.path().join(&test_file);
+
+    File::create_new(&probe).unwrap();
+
+    saving_service(tmp.path(), &secs);
+    let destination = video_dir().unwrap().join(&test_file);
+
+    assert!(!probe.exists());
+    assert!(destination.exists());
+    remove_file(destination).unwrap();
+}
+
+//-------------------------------------------------------------------------------------------------
+//      PATH RENAMING TESTS
+//-------------------------------------------------------------------------------------------------
+
+#[test]
+fn correct_renaming_savings() {
+    let path = tempdir_in(".").unwrap();
+    let path = path.path();
+    let unknown_path = path.join(UNKNOWN);
+    create_dir_all(path.join(TEST_FILE)).unwrap();
+
+    let duration = Duration::ZERO;
+    saving_service(path, &duration); // File 0
+
+    create_dir_all(path.join(TEST_FILE)).unwrap();
+    saving_service(path, &duration); // File with (1)
+
+    create_dir_all(path.join(TEST_FILE)).unwrap();
+    saving_service(path, &duration); // File with (2)
+
+    assert!(unknown_path.join(TEST_FILE).exists());
+    let second_file = TEST_FILE.to_owned() + "(1)";
+    assert!(unknown_path.join(second_file).exists());
+    let third_file = TEST_FILE.to_owned() + "(2)";
+    assert!(unknown_path.join(third_file).exists())
+}
