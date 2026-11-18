@@ -99,5 +99,6 @@ systemctl --user enable --now floor-daemon.service
 
 echo ""
 echo "Floord installed and initialized successfully!"
+echo "Change settigs at $CONFIG_FILE"
 echo "Binary: $BINARY_PATH"
 echo "Service: floor-daemon.service"
