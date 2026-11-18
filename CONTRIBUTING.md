@@ -40,5 +40,7 @@ Whether it's a tiny bug fix, a big feature, a suggestion or just some feedback, 
 
 **Don't be afraid to open an issue or send a PR. Thanks for helping make Floord better!**
 
-## Notes
-- cargo test may fail intermittently on Windows machines due to inconsistencies in sleep timing.
+> [!NOTE]
+> I'm always looking for new ideas and things to improve, so please, feel free to open issues!
+> 
+> I need some issues hehehe.
