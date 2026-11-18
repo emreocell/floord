@@ -151,11 +151,23 @@ fn run_cleanup(cli_args: &Args) {
     let grace = Duration::from_hours(24 * cli_args.grace);
     if cli_args.daemon {
         loop {
-            cleanup_service(&paths, &span, &grace, cli_args.allow_deletion);
+            cleanup_service(
+                &paths,
+                &span,
+                &grace,
+                cli_args.allow_deletion,
+                cli_args.notify,
+            );
             sleep(C_LOOP_INTERVAL);
         }
     }
-    cleanup_service(&paths, &span, &grace, cli_args.allow_deletion);
+    cleanup_service(
+        &paths,
+        &span,
+        &grace,
+        cli_args.allow_deletion,
+        cli_args.notify,
+    );
     println!("Cleanup done!");
 }
 

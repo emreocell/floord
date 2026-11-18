@@ -21,6 +21,7 @@ fn dont_delete_by_both_times() {
         &Duration::new(5, 0),
         &Duration::new(5, 0),
         true,
+        false,
     );
 
     assert!(probe.exists());
@@ -33,7 +34,7 @@ fn delete_by_both_times_zero() {
     let probe = path.join(SOON_DELETED).join(TEST_FILE);
     create_dir_all(&probe).unwrap();
 
-    cleanup_service(&vec![path], &Duration::ZERO, &Duration::ZERO, true);
+    cleanup_service(&vec![path], &Duration::ZERO, &Duration::ZERO, true, false);
 
     assert!(!probe.exists());
     assert!(probe.parent().unwrap().exists());
@@ -51,6 +52,7 @@ fn delete_by_grace_time_zero() {
         &Duration::from_millis(50),
         &Duration::ZERO,
         true,
+        false,
     );
 
     assert!(probe.exists());
@@ -61,6 +63,7 @@ fn delete_by_grace_time_zero() {
         &Duration::from_millis(50),
         &Duration::ZERO,
         true,
+        false,
     );
 
     assert!(!probe.exists());
@@ -79,6 +82,7 @@ fn delete_by_span_time_zero() {
         &Duration::ZERO,
         &Duration::from_millis(50),
         true,
+        false,
     );
 
     assert!(probe.exists());
@@ -89,6 +93,7 @@ fn delete_by_span_time_zero() {
         &Duration::ZERO,
         &Duration::from_millis(50),
         true,
+        false,
     );
 
     assert!(!probe.exists());
@@ -107,6 +112,7 @@ fn delete_by_summatory_times() {
         &Duration::from_millis(50),
         &Duration::from_millis(50),
         true,
+        false,
     );
     assert!(probe.exists()); // May exist due to not wait
 
@@ -116,6 +122,7 @@ fn delete_by_summatory_times() {
         &Duration::from_millis(50),
         &Duration::from_millis(50),
         true,
+        false,
     );
 
     assert!(!probe.exists()); // May NOT exist due to the wait
@@ -134,7 +141,7 @@ fn dont_delete_secure_nor_soon_deleted_folders() {
     assert!(secure.exists());
     assert!(soon_deleted.exists());
 
-    cleanup_service(&vec![path], &Duration::ZERO, &Duration::ZERO, true);
+    cleanup_service(&vec![path], &Duration::ZERO, &Duration::ZERO, true, false);
 
     assert!(secure.exists());
     assert!(soon_deleted.exists());

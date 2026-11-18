@@ -10,6 +10,7 @@ pub fn service(
     duration_old: &Duration,
     duration_grace: &Duration,
     allow_deletion: bool,
+    notify: bool,
 ) {
     let limit = duration_old.add(*duration_grace);
 
@@ -19,7 +20,7 @@ pub fn service(
                 let Ok(entry) = entry else {
                     continue;
                 };
-                manage_entry(&entry, duration_old);
+                manage_entry(&entry, duration_old, notify);
             }
         }
         if allow_deletion {
@@ -28,7 +29,7 @@ pub fn service(
     }
 }
 
-fn manage_entry(dir_entry: &DirEntry, duration_old: &Duration) {
+fn manage_entry(dir_entry: &DirEntry, duration_old: &Duration, notify: bool) {
     let path = dir_entry.path();
     if path
         .file_name()
@@ -38,5 +39,5 @@ fn manage_entry(dir_entry: &DirEntry, duration_old: &Duration) {
         return;
     }
 
-    cleanup_phase(duration_old, &path);
+    cleanup_phase(duration_old, &path, notify);
 }

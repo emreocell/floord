@@ -1,11 +1,12 @@
 use crate::SOON_DELETED;
 use crate::service_utils::rename_destination;
 use anyhow::Context;
+use notify_rust::Notification;
 use std::fs::{create_dir_all, remove_dir_all, remove_file, rename};
 use std::path::Path;
 use std::time::{Duration, SystemTime};
 
-pub fn cleanup_phase(duration_old: &Duration, path: &Path) {
+pub fn cleanup_phase(duration_old: &Duration, path: &Path, notify: bool) {
     let metadata = path.metadata().context("reading metadata").unwrap();
     if metadata
         .accessed()
@@ -39,7 +40,14 @@ pub fn cleanup_phase(duration_old: &Duration, path: &Path) {
         };
 
         let new_path = rename_destination(new_path.join(SOON_DELETED).join(file_name));
-        let _ = rename(path, new_path);
+        if rename(path, new_path).is_ok() && notify {
+            let old = path.parent().and_then(Path::file_name).unwrap_or_default();
+            let old = format!("{}/{}", old.to_string_lossy(), file_name.to_string_lossy());
+            let _ = Notification::new()
+                .appname("Floord")
+                .body(&format!("Cleaning up {old} to {SOON_DELETED}"))
+                .show();
+        }
     }
 }
 

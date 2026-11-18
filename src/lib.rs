@@ -20,6 +20,7 @@ pub fn cleanup_service(
     duration_old: &Duration,
     duration_grace: &Duration,
     allow_deletion: bool,
+    notify: bool,
 ) {
-    cleanup_service::service(paths, duration_old, duration_grace, allow_deletion);
+    cleanup_service::service(paths, duration_old, duration_grace, allow_deletion, notify);
 }
