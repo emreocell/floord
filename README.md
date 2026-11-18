@@ -35,6 +35,14 @@ Execute:
 ```powershell
 irm https://raw.githubusercontent.com/polete-bermejo/floord/main/installers/install.ps1 | iex
 ```
+
+### Uninstall (Windows)
+Execute:
+```powershell
+irm https://raw.githubusercontent.com/polete-bermejo/floord/main/installers/uninstall.ps1 | iex
+```
+This stops and removes the startup task, the Floord process, the binary and the configuration folder.
+
 ## Service Guide
 To see the available commands and options, run:
 ```bash
