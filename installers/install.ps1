@@ -13,8 +13,6 @@ $AppExe = Join-Path $InstallDir "floord.exe"
 $ConfigDir = Join-Path $env:APPDATA "floord"
 $ConfigFile = Join-Path $ConfigDir "config.toml"
 
-$AppArgs = "--config `"$ConfigFile`""
-
 # ==========================================
 # DOWNLOAD LATEST RELEASE
 # ==========================================
@@ -36,40 +34,44 @@ New-Item -ItemType Directory -Force -Path $InstallDir | Out-Null
 
 $TempExe = Join-Path $InstallDir "floord-update.tmp.exe"
 
-Invoke-WebRequest `
-    -Uri $Asset.browser_download_url `
-    -OutFile $TempExe
+try {
+    Invoke-WebRequest `
+        -Uri $Asset.browser_download_url `
+        -OutFile $TempExe
 
-if (!(Test-Path $TempExe)) {
-    throw "Floord executable download failed."
-}
+    if (!(Test-Path $TempExe)) {
+        throw "Floord executable download failed."
+    }
 
-Write-Host "Downloaded version: $($Release.tag_name)" -ForegroundColor Green
+    Write-Host "Downloaded version: $($Release.tag_name)" -ForegroundColor Green
 
-# ==========================================
-# STOP PREVIOUS INSTANCE
-# ==========================================
+    # ==========================================
+    # STOP PREVIOUS INSTANCE
+    # ==========================================
 
-$ExistingTask = Get-ScheduledTask -TaskName $TaskName -ErrorAction SilentlyContinue
-
-if ($ExistingTask) {
-    Write-Host "Stopping existing Floord task..." -ForegroundColor Cyan
+    Write-Host "Stopping previous Floord instance..." -ForegroundColor Cyan
 
     Stop-ScheduledTask -TaskName $TaskName -ErrorAction SilentlyContinue
+
+    Get-Process -Name "floord" -ErrorAction SilentlyContinue |
+        Stop-Process -Force
+
+    Start-Sleep -Seconds 2
+
+    # ==========================================
+    # INSTALL BINARY
+    # ==========================================
+
+    Write-Host "Installing Floord..." -ForegroundColor Cyan
+
+    Move-Item -Path $TempExe -Destination $AppExe -Force
+
 }
-
-Get-Process -Name "floord" -ErrorAction SilentlyContinue |
-    Stop-Process -Force
-
-Start-Sleep -Seconds 2
-
-# ==========================================
-# INSTALL BINARY
-# ==========================================
-
-Write-Host "Installing Floord..." -ForegroundColor Cyan
-
-Move-Item -Path $TempExe -Destination $AppExe -Force
+finally {
+    if (Test-Path $TempExe) {
+        Remove-Item $TempExe -Force
+    }
+}
 
 # ==========================================
 # CREATE CONFIGURATION
@@ -125,6 +127,8 @@ Write-Host "Creating Floord startup task..." -ForegroundColor Cyan
 
 $CurrentUser = [Security.Principal.WindowsIdentity]::GetCurrent().Name
 
+$AppArgs = "--config `"$ConfigFile`""
+
 $Action = New-ScheduledTaskAction `
     -Execute "powershell.exe" `
     -Argument "-NoProfile -WindowStyle Hidden -Command `"Start-Process -FilePath '$AppExe' -ArgumentList '$AppArgs' -WorkingDirectory '$InstallDir' -WindowStyle Hidden`""
@@ -135,8 +139,6 @@ $Trigger = New-ScheduledTaskTrigger `
 
 $Settings = New-ScheduledTaskSettingsSet `
     -ExecutionTimeLimit ([TimeSpan]::Zero) `
-    -RestartCount 3 `
-    -RestartInterval (New-TimeSpan -Minutes 1) `
     -StartWhenAvailable
 
 Register-ScheduledTask `
@@ -163,16 +165,23 @@ Start-Sleep -Seconds 2
 # VERIFY INSTALLATION
 # ==========================================
 
-$Task = Get-ScheduledTask -TaskName $TaskName
+$Process = Get-Process -Name "floord" -ErrorAction SilentlyContinue
 
 Write-Host ""
-Write-Host "Floord installed and initialized successfully!" -ForegroundColor Green
+
+if ($Process) {
+    Write-Host "Floord installed and running successfully!" -ForegroundColor Green
+    Write-Host "PID: $($Process.Id)"
+}
+else {
+    Write-Host "Floord installed, but the process was not detected." -ForegroundColor Yellow
+}
+
 Write-Host ""
 Write-Host "Version:      $($Release.tag_name)"
 Write-Host "User:         $CurrentUser"
 Write-Host "Directory:    $InstallDir"
 Write-Host "Config:       $ConfigFile"
 Write-Host "Task:         $TaskName"
-Write-Host "Task state:   $($Task.State)"
 Write-Host ""
 Write-Host "Floord will automatically start when you log in."
