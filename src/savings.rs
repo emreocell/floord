@@ -1,6 +1,7 @@
 use crate::UNKNOWN;
 use crate::service_utils::rename_destination;
 use dirs::{audio_dir, document_dir, picture_dir, video_dir};
+use notify_rust::Notification;
 use std::fs::{DirEntry, create_dir_all, rename};
 use std::path::{Path, PathBuf};
 
@@ -148,7 +149,7 @@ const DOCUMENT_EXT: &[&str] = &[
 ];
 
 /// Filter and saves file in the designated path
-pub fn save(file: &DirEntry, inbox: &Path) {
+pub fn save(file: &DirEntry, inbox: &Path, notify: bool) {
     let file_path = file.path();
     let Some(file_name) = file_path.file_name() else {
         return;
@@ -171,7 +172,15 @@ pub fn save(file: &DirEntry, inbox: &Path) {
         create_dir_all(unknown_path).unwrap_or(());
     }
     let new_path = rename_destination(new_path);
-    let _ = rename(file_path, new_path);
+    if rename(&file_path, new_path).is_ok() && notify {
+        let _ = Notification::new()
+            .appname("Floord")
+            .body(&format!(
+                "Saving {} into {UNKNOWN}",
+                file_name.to_string_lossy()
+            ))
+            .show();
+    }
 }
 
 fn get_destination_folder(file_path: &Path) -> Option<PathBuf> {

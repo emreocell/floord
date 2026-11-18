@@ -80,6 +80,10 @@ struct Args {
     #[arg(long, help_heading = "Daemon", default_value_t = false)]
     daemon: bool,
 
+    /// Enable notifications
+    #[arg(long, help_heading = "Daemon", default_value_t = false)]
+    notify: bool,
+
     /// Path to configuration file
     #[arg(long, help_heading = "Configuration", conflicts_with_all ([
         "organizer",
@@ -88,7 +92,8 @@ struct Args {
         "cleanup",
         "span",
         "grace",
-        "allow_deletion"
+        "allow_deletion",
+        "notify"
     ]))]
     config: Option<PathBuf>,
 }
@@ -113,11 +118,11 @@ fn run_organizer(cli_args: &Args) {
 
     if cli_args.daemon {
         loop {
-            saving_service(&inbox_path, &delay);
+            saving_service(&inbox_path, &delay, cli_args.notify);
             sleep(O_LOOP_INTERVAL);
         }
     }
-    saving_service(&inbox_path, &delay);
+    saving_service(&inbox_path, &delay, cli_args.notify);
     println!("Organization done!");
 }
 

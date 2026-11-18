@@ -1,7 +1,8 @@
 # Floor Daemon configuration template
 
 # General settings
-daemon = false
+daemon = true
+notify = true
 
 # Enable Inbox organizer service and its parameters
 organizer = true

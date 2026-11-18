@@ -11,8 +11,8 @@ pub const SOON_DELETED: &str = "SoonDeleted";
 pub const SECURE: &str = "Secure";
 pub const UNKNOWN: &str = "Unknown";
 
-pub fn saving_service(path: &Path, duration: &Duration) {
-    saving_service::service(path, duration);
+pub fn saving_service(path: &Path, duration: &Duration, notify: bool) {
+    saving_service::service(path, duration, notify);
 }
 
 pub fn cleanup_service(

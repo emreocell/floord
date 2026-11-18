@@ -17,7 +17,7 @@ fn dont_move_by_duration() {
     let secs = Duration::new(300, 0);
     let probe = &tmp.path().join(TEST_FILE);
     create_dir(probe).unwrap();
-    saving_service(tmp.path(), &secs);
+    saving_service(tmp.path(), &secs, false);
     assert!(probe.exists())
 }
 
@@ -29,7 +29,7 @@ fn move_by_duration() {
     let secs = Duration::ZERO;
     let probe = tmp.join(TEST_FILE);
     create_dir(&probe).unwrap();
-    saving_service(tmp, &secs);
+    saving_service(tmp, &secs, false);
     assert!(!probe.exists())
 }
 
@@ -40,7 +40,7 @@ fn move_to_unknown() {
     let secs = Duration::ZERO;
     let probe = tmp.join(TEST_FILE);
     create_dir(&probe).unwrap();
-    saving_service(tmp, &secs);
+    saving_service(tmp, &secs, false);
     assert!(!probe.exists());
 
     assert!(tmp.join(UNKNOWN).exists());
@@ -55,7 +55,7 @@ fn move_to_unknown_by_duration() {
     let probe = tmp.join(TEST_FILE);
     create_dir(&probe).unwrap();
     sleep(Duration::new(1, 0));
-    saving_service(tmp, &secs);
+    saving_service(tmp, &secs, false);
     assert!(!probe.exists());
 
     assert!(tmp.join(UNKNOWN).exists());
@@ -73,7 +73,7 @@ fn move_to_documents() {
 
     File::create_new(&probe).unwrap();
 
-    saving_service(tmp.path(), &secs);
+    saving_service(tmp.path(), &secs, false);
     let destination = document_dir().unwrap().join(&test_file);
 
     assert!(!probe.exists());
@@ -92,7 +92,7 @@ fn move_to_pictures() {
 
     File::create_new(&probe).unwrap();
 
-    saving_service(tmp.path(), &secs);
+    saving_service(tmp.path(), &secs, false);
     let destination = picture_dir().unwrap().join(&test_file);
 
     assert!(!probe.exists());
@@ -111,7 +111,7 @@ fn move_to_audio() {
 
     File::create_new(&probe).unwrap();
 
-    saving_service(tmp.path(), &secs);
+    saving_service(tmp.path(), &secs, false);
     let destination = audio_dir().unwrap().join(&test_file);
 
     assert!(!probe.exists());
@@ -130,7 +130,7 @@ fn move_to_video() {
 
     File::create_new(&probe).unwrap();
 
-    saving_service(tmp.path(), &secs);
+    saving_service(tmp.path(), &secs, false);
     let destination = video_dir().unwrap().join(&test_file);
 
     assert!(!probe.exists());
@@ -150,13 +150,13 @@ fn correct_renaming_savings() {
     create_dir_all(path.join(TEST_FILE)).unwrap();
 
     let duration = Duration::ZERO;
-    saving_service(path, &duration); // File 0
+    saving_service(path, &duration, false); // File 0
 
     create_dir_all(path.join(TEST_FILE)).unwrap();
-    saving_service(path, &duration); // File with (1)
+    saving_service(path, &duration, false); // File with (1)
 
     create_dir_all(path.join(TEST_FILE)).unwrap();
-    saving_service(path, &duration); // File with (2)
+    saving_service(path, &duration, false); // File with (2)
 
     assert!(unknown_path.join(TEST_FILE).exists());
     let second_file = TEST_FILE.to_owned() + "(1)";

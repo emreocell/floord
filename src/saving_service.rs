@@ -5,7 +5,7 @@ use std::path::Path;
 use std::time::{Duration, SystemTime};
 
 /// Initialize the service
-pub fn service(inbox_dir: &Path, seconds: &Duration) {
+pub fn service(inbox_dir: &Path, seconds: &Duration, notify: bool) {
     let read_dir: ReadDir = inbox_dir
         .read_dir()
         .context("reading inbox folder")
@@ -13,12 +13,17 @@ pub fn service(inbox_dir: &Path, seconds: &Duration) {
 
     for entry in read_dir {
         let Ok(dir_entry) = entry else { continue };
-        let _ = manage_entry(&dir_entry, inbox_dir, seconds);
+        let _ = manage_entry(&dir_entry, inbox_dir, seconds, notify);
     }
 }
 
 /// Filters and manages the file-entry in the folder
-fn manage_entry(dir_entry: &DirEntry, inbox_dir: &Path, delay_in_seconds: &Duration) -> Result<()> {
+fn manage_entry(
+    dir_entry: &DirEntry,
+    inbox_dir: &Path,
+    delay_in_seconds: &Duration,
+    notify: bool,
+) -> Result<()> {
     let metadata = dir_entry.metadata()?;
     let current_time = SystemTime::now();
 
@@ -32,6 +37,6 @@ fn manage_entry(dir_entry: &DirEntry, inbox_dir: &Path, delay_in_seconds: &Durat
         return Ok(());
     }
 
-    save(dir_entry, inbox_dir);
+    save(dir_entry, inbox_dir, notify);
     Ok(())
 }
