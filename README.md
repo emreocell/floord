@@ -22,7 +22,7 @@ You can configure which directories Floord should scan, as well as specify paths
 
 Depending on your configuration, Floord can group outdated files for easier management or automatically delete them.
 
-## Installation
+# Installation
 
 ### Linux
 Execute:
@@ -36,12 +36,20 @@ Execute:
 irm https://raw.githubusercontent.com/polete-bermejo/floord/main/installers/install.ps1 | iex
 ```
 
-### Uninstall (Windows)
+# Uninstall
+This stops and removes the startup task or daemon, the Floord process, the binary and the configuration folder.
+
+## Linux
+Execute:
+```bash
+curl -fsSL https://raw.githubusercontent.com/polete-bermejo/floord/main/uninstallers/uninstall.sh | sh
+```
+
+## Windows
 Execute:
 ```powershell
-irm https://raw.githubusercontent.com/polete-bermejo/floord/main/installers/uninstall.ps1 | iex
+irm https://raw.githubusercontent.com/polete-bermejo/floord/main/uninstallers/uninstall.ps1 | iex
 ```
-This stops and removes the startup task, the Floord process, the binary and the configuration folder.
 
 ## Service Guide
 To see the available commands and options, run:
