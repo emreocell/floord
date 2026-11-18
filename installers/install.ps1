@@ -126,9 +126,8 @@ Write-Host "Creating Floord startup task..." -ForegroundColor Cyan
 $CurrentUser = [Security.Principal.WindowsIdentity]::GetCurrent().Name
 
 $Action = New-ScheduledTaskAction `
-    -Execute $AppExe `
-    -Argument $AppArgs `
-    -WorkingDirectory $InstallDir
+    -Execute "powershell.exe" `
+    -Argument "-NoProfile -WindowStyle Hidden -Command `"Start-Process -FilePath '$AppExe' -ArgumentList '$AppArgs' -WorkingDirectory '$InstallDir' -WindowStyle Hidden`""
 
 $Trigger = New-ScheduledTaskTrigger `
     -AtLogOn `
@@ -138,22 +137,16 @@ $Settings = New-ScheduledTaskSettingsSet `
     -ExecutionTimeLimit ([TimeSpan]::Zero) `
     -RestartCount 3 `
     -RestartInterval (New-TimeSpan -Minutes 1) `
-    -StartWhenAvailable `
-    -AllowStartIfOnBatteries `
-    -DontStopIfGoingOnBatteries
-
-$Principal = New-ScheduledTaskPrincipal `
-    -UserId $CurrentUser `
-    -LogonType Interactive `
-    -RunLevel Limited
+    -StartWhenAvailable
 
 Register-ScheduledTask `
     -TaskName $TaskName `
     -Action $Action `
     -Trigger $Trigger `
     -Settings $Settings `
-    -Principal $Principal `
     -Description "Floord background file organizer" `
+    -User $CurrentUser `
+    -RunLevel Limited `
     -Force | Out-Null
 
 # ==========================================
