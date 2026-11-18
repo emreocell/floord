@@ -179,9 +179,8 @@ else {
 
 Write-Host ""
 Write-Host "Version:      $($Release.tag_name)"
-Write-Host "User:         $CurrentUser"
-Write-Host "Directory:    $InstallDir"
 Write-Host "Config:       $ConfigFile"
+Write-Host "Binary:    $AppExe"
 Write-Host "Task:         $TaskName"
 Write-Host ""
 Write-Host "Floord will automatically start when you log in."

@@ -13,7 +13,7 @@ TMP="$(mktemp)"
 trap 'rm -f "$TMP"' EXIT
 
 # DOWNLOAD BINARY
-echo "Downloading Floord..."
+echo "Downloading latest Floord release..."
 curl -fsSL "$RELEASE_BIN" -o "$TMP"
 
 # STOP PREVIOUS SERVICE
@@ -99,6 +99,9 @@ systemctl --user enable --now floor-daemon.service
 
 echo ""
 echo "Floord installed and initialized successfully!"
-echo "Change settigs at $CONFIG_FILE"
+echo "Version: $($BINARY_PATH -V)"
+echo "Config: $CONFIG_FILE"
 echo "Binary: $BINARY_PATH"
 echo "Service: floor-daemon.service"
+echo ""
+echo "Floord will automatically start when you log in."
